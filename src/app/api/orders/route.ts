@@ -170,7 +170,8 @@ export async function POST(req: Request) {
       demo: boolean;
       copyPaste?: string;
       qrBase64?: string | null;
-    } = { available: false, demo: false };
+      reason?: string;
+    } = { available: false, demo: false, reason: "indisponível" };
 
     try {
       if (isConfigured()) {
@@ -213,11 +214,23 @@ export async function POST(req: Request) {
           copyPaste: charge.copyPaste,
           qrBase64: charge.qrBase64,
         };
+      } else {
+        payment = {
+          available: false,
+          demo: false,
+          reason: "chaves MisticPay ausentes nas variáveis de ambiente",
+        };
       }
     } catch (pixErr) {
       // Pix não saiu — o pedido continua salvo e a chave vai pelo WhatsApp
       console.error("[api/orders] falha ao gerar Pix, cai no WhatsApp:", pixErr);
-      payment = { available: false, demo: false };
+      payment = {
+        available: false,
+        demo: false,
+        reason: `erro MisticPay: ${
+          pixErr instanceof Error ? pixErr.message : String(pixErr)
+        }`,
+      };
     }
 
     return NextResponse.json(
