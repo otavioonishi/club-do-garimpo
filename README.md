@@ -44,13 +44,13 @@ checkout e pode ser enviado pelo WhatsApp quando perguntarem.
    - `MISTICPAY_CLIENT_SECRET` = sua chave `sk_`
    - `APP_PUBLIC_URL` = `https://club-do-garimpo.vercel.app` (confirme o domínio exato depois)
 4. **Deploy** (~2–3 min — o build roda na nuvem da Vercel, sem limite de memória)
-5. Crie o banco: no projeto, aba **Storage** → **Create Database → Postgres (Neon)**
-   → plano **Hobby (free)** → **Connect to Project** → selecione `club-do-garimpo`
-   → a Vercel cria a `DATABASE_URL` sozinha e **redeploya**
-6. Pronto — na nova build o `vercel.json` já roda `prisma db push` e cria as tabelas dos pedidos
+5. Crie o banco: no projeto, aba **Storage** → **Create Database → Postgres (Neon ou Supabase)**
+   → plano **free** → **Connect to Project** → selecione `club-do-garimpo`
+6. Pronto — a integração cria as variáveis Postgres sozinha e **redeploya**;
+   na nova build o `vercel.json` já roda `prisma db push` e cria as tabelas dos pedidos
 
-> ℹ️ Se o primeiro deploy ficar sem banco, as páginas funcionam mas o checkout
-> reclama — é só conectar o Postgres no passo 5 e o redeploy resolve tudo.
+> ℹ️ O schema lê `POSTGRES_PRISMA_URL` (criada tanto pela integração Supabase
+> quanto pela Neon). Nenhuma variável de banco precisa ser copiada à mão.
 
 ### Depois do deploy
 
