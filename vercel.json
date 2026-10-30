@@ -1,4 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "if [ -n \"$POSTGRES_PRISMA_URL\" ] || [ -n \"$POSTGRES_URL\" ]; then export DATABASE_URL=\"${POSTGRES_PRISMA_URL:-$POSTGRES_URL}\"; prisma db push --accept-data-loss --skip-generate || exit 1; fi; next build"
+  "buildCommand": "DB=\"${POSTGRES_PRISMA_URL:-$POSTGRES_URL}\"; if [ -n \"$DB\" ]; then case \"$DB\" in *\\?*) export DATABASE_URL=\"$DB&connect_timeout=10\";; *) export DATABASE_URL=\"$DB?connect_timeout=10\";; esac; echo \"[db] host: $(echo $DATABASE_URL | sed 's|.*@||; s|/.*||')\"; prisma db push --accept-data-loss --skip-generate || exit 1; fi; next build"
 }
