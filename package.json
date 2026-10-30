@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "postinstall": "prisma generate",
+    "prebuild": "bash prisma/db-init.sh",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
