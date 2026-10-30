@@ -1,0 +1,43 @@
+# 🎄 Club do Garimpo — Blueprint de deploy no Render
+#
+# Como usar (depois que o projeto estiver no GitHub):
+#   1. Acesse dashboard.render.com → New + → Blueprint
+#   2. Escolha este repositório → Apply
+#   3. Nas variáveis marcadas com "sync: false", preencha:
+#        MISTICPAY_CLIENT_ID     → sua pk_ (painel MisticPay → API → Chaves de Acesso)
+#        MISTICPAY_CLIENT_SECRET → sua sk_
+#        APP_PUBLIC_URL          → https://NOME-DO-SEU-SERVIÇO.onrender.com
+#   4. Depois do primeiro deploy, cadastre o webhook na MisticPay:
+#        https://NOME-DO-SEU-SERVIÇO.onrender.com/api/webhooks/misticpay
+
+services:
+  - type: web
+    name: club-do-garimpo
+    runtime: node
+    # ⚠️ O plano STARTER (pago) é necessário para o disco persistente abaixo.
+    #    No plano FREE o site funciona, mas o banco SQLite é apagado a cada
+    #    deploy/restart — os pedidos dos clientes se perderiam!
+    plan: starter
+    region: frankfurt # região mais próxima do Brasil entre as disponíveis
+    branch: main
+    autoDeploy: true # cada push no GitHub publica automaticamente
+    buildCommand: npm install && npm run build
+    startCommand: npx prisma db push --skip-generate && npm start
+    healthCheckPath: /
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Banco SQLite dentro do disco persistente (sobrevive a deploys)
+      - key: DATABASE_URL
+        value: file:/var/data/custom.db
+      # 🔐 Segredos — preencher no painel do Render (nunca no GitHub)
+      - key: MISTICPAY_CLIENT_ID
+        sync: false
+      - key: MISTICPAY_CLIENT_SECRET
+        sync: false
+      - key: APP_PUBLIC_URL
+        sync: false
