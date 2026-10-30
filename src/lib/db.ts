@@ -12,14 +12,8 @@ const databaseUrl =
   process.env.POSTGRES_URL?.trim() ||
   process.env.DATABASE_URL?.trim()
 
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    datasourceUrl: databaseUrl,
-  })
-
 /* 🛟 autocura: cria a tabela de pedidos no primeiro acesso, se não existir.
-   Usa um client próprio para não entrar em conflito com o middleware. */
+   Usa um client próprio (sem extensão) para não criar dependência circular. */
 const CREATE_ORDER_SQL = `CREATE TABLE IF NOT EXISTS "Order" (
   "id" TEXT NOT NULL,
   "code" TEXT NOT NULL,
@@ -74,10 +68,19 @@ export const tablesReady: Promise<void> =
   })
 globalForPrisma.tablesReady = tablesReady
 
-/* toda query espera a autocura terminar antes de rodar */
-db.$use(async (params, next) => {
-  await tablesReady
-  return next(params)
+const base =
+  globalForPrisma.prisma ??
+  new PrismaClient({ datasourceUrl: databaseUrl })
+
+export const db = base.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ args, query }) {
+        await tablesReady
+        return query(args)
+      },
+    },
+  },
 })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = base
