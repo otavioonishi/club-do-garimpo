@@ -19,7 +19,7 @@
 # 🔧 Se o serviço JÁ EXISTE no Render e está dando 502:
 #    Painel do serviço → Settings → Build & Deploy → edite:
 #      Build Command:  echo "site pre-compilado"
-#      Start Command:  [ -f /tmp/custom.db ] || cp prisma/render-init.db /tmp/custom.db; npm start
+#      Start Command:  cp -n prisma/render-init.db /tmp/custom.db; npm start
 #    Salve e depois: Manual Deploy → Deploy latest commit.
 #
 # 💰 Plano FREE: sem cartão de crédito. Limitações:
@@ -42,8 +42,9 @@ services:
     # ✅ nada de build no servidor: o standalone já vem commitado do GitHub
     #    (buildar aqui estouraria os 512 MB do plano FREE)
     buildCommand: echo "site pre-compilado — nada para buildar"
-    # banco novo só na primeira vez; nas reiniciações mantém os pedidos
-    startCommand: '[ -f /tmp/custom.db ] || cp prisma/render-init.db /tmp/custom.db; npm start'
+    # banco novo só na primeira vez (cp -n não sobrescreve); nas reiniciações
+    # mantém os pedidos. Sem colchetes de propósito — nada para errar na cópia
+    startCommand: cp -n prisma/render-init.db /tmp/custom.db; npm start
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION

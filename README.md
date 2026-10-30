@@ -58,7 +58,7 @@ O projeto já vem com o blueprint pronto (`render.yaml`).
 **Settings → Build & Deploy** e troque:
 
 - **Build Command:** `echo "site pre-compilado"`
-- **Start Command:** `[ -f /tmp/custom.db ] || cp prisma/render-init.db /tmp/custom.db; npm start`
+- **Start Command:** `cp -n prisma/render-init.db /tmp/custom.db; npm start`
 
 Salve e clique em **Manual Deploy → Deploy latest commit**.
 
