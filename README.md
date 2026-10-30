@@ -45,13 +45,13 @@ O projeto já vem com o blueprint pronto (`render.yaml`):
 
 - 🔔 Cadastre o webhook na MisticPay (painel → API → Webhooks):
   `https://NOME-DO-SERVIÇO.onrender.com/api/webhooks/misticpay`
-- 💾 O plano **Starter** inclui o disco persistente (`/var/data`), onde o
-  banco SQLite guarda os pedidos com segurança entre deploys.
-- 😴 Instância parada "dorme" após 15 min sem acesso (cold start de ~50s no
-  próximo visitante — comum em todos os hosts com plano econômico).
+- 😴 No plano **free** a instância "dorme" após 15 min sem acesso (cold start
+  de ~50s no próximo visitante) e o banco SQLite fica em `/tmp` — o histórico
+  de pedidos se perde a cada deploy/restart. Atenda cada pedido pelo WhatsApp.
 
-### Por que o plano free não serve (com banco SQLite)?
+### Quer pedidos permanentes e site 24h? (plano Starter)
 
-No plano free o Render **não permite disco persistente**: a cada deploy ou
-restart o arquivo do banco é apagado e os pedidos se perdem. O blueprint já
-sai configurado com `starter` + disco de 1 GB.
+No painel do Render: **Settings → Change Instance Type → Starter** e
+**Advanced → Add Disk** (nome `sqlite-data`, caminho `/var/data`, 1 GB) e
+troque a variável `DATABASE_URL` para `file:/var/data/custom.db`.
+A partir daí os pedidos sobrevivem a deploys e o site fica ligado 24h.

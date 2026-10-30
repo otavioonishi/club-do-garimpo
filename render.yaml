@@ -9,31 +9,33 @@
 #        APP_PUBLIC_URL          → https://NOME-DO-SEU-SERVIÇO.onrender.com
 #   4. Depois do primeiro deploy, cadastre o webhook na MisticPay:
 #        https://NOME-DO-SEU-SERVIÇO.onrender.com/api/webhooks/misticpay
+#
+# 💰 Plano FREE: sem cartão de crédito. Limitações:
+#    - O site "dorme" após 15 min sem visitas (próximo acesso demora ~1 min)
+#    - O banco SQLite fica em /tmp e é recriado a cada deploy/restart,
+#      então o HISTÓRICO de pedidos se perde — atenda cada pedido pelo
+#      WhatsApp na hora.
+#    - Para ter pedidos permanentes + site 24h: no painel do Render,
+#      troque o plan para "starter" e adicione um disco em /var/data
+#      (DATABASE_URL=file:/var/data/custom.db).
 
 services:
   - type: web
     name: club-do-garimpo
     runtime: node
-    # ⚠️ O plano STARTER (pago) é necessário para o disco persistente abaixo.
-    #    No plano FREE o site funciona, mas o banco SQLite é apagado a cada
-    #    deploy/restart — os pedidos dos clientes se perderiam!
-    plan: starter
+    plan: free # sem cartão de crédito
     region: frankfurt # região mais próxima do Brasil entre as disponíveis
     branch: main
     autoDeploy: true # cada push no GitHub publica automaticamente
     buildCommand: npm install && npm run build
     startCommand: npx prisma db push --skip-generate && npm start
     healthCheckPath: /
-    disk:
-      name: sqlite-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: "22"
-      # Banco SQLite dentro do disco persistente (sobrevive a deploys)
+      # Banco SQLite temporário (/tmp) — veja as limitações no topo
       - key: DATABASE_URL
-        value: file:/var/data/custom.db
+        value: file:/tmp/custom.db
       # 🔐 Segredos — preencher no painel do Render (nunca no GitHub)
       - key: MISTICPAY_CLIENT_ID
         sync: false
