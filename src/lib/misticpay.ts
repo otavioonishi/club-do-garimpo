@@ -23,12 +23,17 @@ export type PixCharge = {
 
 export type ChargeState = "PENDENTE" | "COMPLETO" | "FALHA";
 
+/** Limpa a colagem: espaços e aspas que sobram ao copiar o valor. */
+function cleanEnv(v: string | undefined): string {
+  return v?.trim().replace(/^["']+|["']+$/g, "") ?? "";
+}
+
 export function clientId(): string {
-  return process.env.MISTICPAY_CLIENT_ID?.trim() ?? "";
+  return cleanEnv(process.env.MISTICPAY_CLIENT_ID);
 }
 
 export function clientSecret(): string {
-  return process.env.MISTICPAY_CLIENT_SECRET?.trim() ?? "";
+  return cleanEnv(process.env.MISTICPAY_CLIENT_SECRET);
 }
 
 /** Chaves reais configuradas? */
