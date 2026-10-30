@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "if [ -n \"$DATABASE_URL\" ]; then prisma db push --accept-data-loss --skip-generate || exit 1; fi; next build"
+}
