@@ -25,8 +25,9 @@ npm run dev           # http://localhost:3000
 ## 🔐 Painel de pedidos
 
 Abra o site com `#pedidos` no final do link (ex.: `seusite.com.br/#pedidos`),
-entre com o **e-mail e senha** configurados em `src/config.ts`
-(`adminEmail` / `adminPin`). Lá você vê todos os pedidos, endereços,
+entre com o **e-mail e senha** configurados nas variáveis de ambiente da Vercel
+(`ADMIN_EMAIL` / `ADMIN_PIN` — nunca no código, para nada aparecer no navegador).
+Lá você vê todos os pedidos, endereços,
 status do Pix (atualiza sozinho a cada 20s), marca como **enviado** e
 define o **prazo de entrega** (dias) de cada pedido.
 
