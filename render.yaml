@@ -19,7 +19,7 @@
 # 🔧 Se o serviço JÁ EXISTE no Render e está dando 502:
 #    Painel do serviço → Settings → Build & Deploy → edite:
 #      Build Command:  echo "site pre-compilado"
-#      Start Command:  npm start
+#      Start Command:  node prisma/ensure-db.js && node .next/standalone/server.js
 #    Salve e depois: Manual Deploy → Deploy latest commit.
 #
 # 💰 Plano FREE: sem cartão de crédito. Limitações:
@@ -42,9 +42,9 @@ services:
     # ✅ nada de build no servidor: o standalone já vem commitado do GitHub
     #    (buildar aqui estouraria os 512 MB do plano FREE)
     buildCommand: echo "site pre-compilado — nada para buildar"
-    # o npm start já prepara o banco (prisma/ensure-db.js) e sobe o site —
-    # comando curtíssimo de propósito: nada para errar na hora de colar
-    startCommand: npm start
+    # o ensure-db prepara o banco e o server.js sobe o site — direto no node,
+    # sem npm, sem build no servidor (comando fixo, nada para errar na cópia)
+    startCommand: node prisma/ensure-db.js && node .next/standalone/server.js
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION

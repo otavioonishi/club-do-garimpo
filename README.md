@@ -58,7 +58,7 @@ O projeto já vem com o blueprint pronto (`render.yaml`).
 **Settings → Build & Deploy** e troque:
 
 - **Build Command:** `echo "site pre-compilado"`
-- **Start Command:** `npm start`
+- **Start Command:** `node prisma/ensure-db.js && node .next/standalone/server.js`
 
 Salve e clique em **Manual Deploy → Deploy latest commit**.
 
