@@ -5,6 +5,7 @@ import {
   Check,
   Clipboard,
   Copy,
+  Home,
   Lock,
   Loader2,
   Mail,
@@ -39,13 +40,18 @@ type Order = {
   status: string
   createdAt: string
   paidAt: string | null
+  deliveryDays: number | null
+  deliveryNote: string | null
+  shippedAt: string | null
+  deliveredAt: string | null
 }
 
 const NEXT_ACTION: Record<string, { next: string; label: string; icon: React.ComponentType<{ className?: string }> } | null> = {
   novo: { next: 'pago', label: 'Marcar Pix pago', icon: Check },
   aguardando_pagamento: { next: 'pago', label: 'Marcar Pix pago', icon: Check },
   pago: { next: 'enviado', label: 'Marcar como enviado', icon: Truck },
-  enviado: null,
+  enviado: { next: 'entregue', label: 'Marcar como entregue', icon: Home },
+  entregue: null,
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -53,13 +59,15 @@ const STATUS_LABEL: Record<string, string> = {
   aguardando_pagamento: 'Aguardando Pix',
   pago: 'Pix pago',
   enviado: 'Enviado',
+  entregue: 'Entregue',
 }
 
 const STATUS_CLS: Record<string, string> = {
   novo: 'border-stone-400/40 bg-white/10 text-rose-100/90',
   aguardando_pagamento: 'border-amber-400/60 bg-amber-400/15 text-amber-400',
   pago: 'border-[#25D366]/60 bg-[#25D366]/15 text-[#25D366]',
-  enviado: 'border-stone-400/40 bg-stone-400/15 text-rose-100/80',
+  enviado: 'border-sky-400/60 bg-sky-400/15 text-sky-300',
+  entregue: 'border-[#25D366]/70 bg-[#25D366]/30 text-[#25D366]',
 }
 
 function brl(value: number): string {
@@ -236,6 +244,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [loading, setLoading] = useState(false)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [advancing, setAdvancing] = useState<string | null>(null)
+  const [shipForm, setShipForm] = useState<{ code: string; days: string; note: string } | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -288,6 +297,41 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
     }
   }
 
+  function openShipForm(o: Order) {
+    setShipForm({
+      code: o.code,
+      days: o.deliveryDays != null ? String(o.deliveryDays) : '7',
+      note: o.deliveryNote ?? '',
+    })
+  }
+
+  async function saveShipForm() {
+    if (!shipForm) return
+    const days = parseInt(shipForm.days, 10)
+    if (!Number.isFinite(days) || days < 1 || days > 90) return
+    setAdvancing(shipForm.code)
+    try {
+      await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': SITE_CONFIG.adminPin,
+          'x-admin-email': SITE_CONFIG.adminEmail,
+        },
+        body: JSON.stringify({
+          code: shipForm.code,
+          status: 'enviado',
+          deliveryDays: days,
+          deliveryNote: shipForm.note,
+        }),
+      })
+      setShipForm(null)
+      await load()
+    } finally {
+      setAdvancing(null)
+    }
+  }
+
   async function copyAddress(o: Order) {
     const text = `${o.customerName} - ${o.phone}\n${o.street}, ${o.number}${o.complement ? ` - ${o.complement}` : ''} - ${o.neighborhood} - ${o.city}/${o.state} - CEP ${o.cep}`
     try {
@@ -314,7 +358,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const waitingPix =
     orders?.filter((o) => o.status === 'novo' || o.status === 'aguardando_pagamento').length ?? 0
   const revenue =
-    orders?.filter((o) => o.status === 'pago' || o.status === 'enviado').reduce(
+    orders?.filter((o) => ['pago', 'enviado', 'entregue'].includes(o.status)).reduce(
       (sum, o) => sum + o.totalValue,
       0
     ) ?? 0
@@ -488,6 +532,18 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
                 </p>
               </div>
 
+              {/* 🚚 prazo de entrega (enviado/entregue) */}
+              {(o.status === 'enviado' || o.status === 'entregue') && o.deliveryDays != null && (
+                <p className="mt-3 flex flex-wrap items-center gap-x-2 rounded-xl border border-sky-400/40 bg-sky-400/10 px-3 py-2.5 text-sm font-bold text-sky-300">
+                  <Truck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  Prazo: chega em até {o.deliveryDays} {o.deliveryDays === 1 ? 'dia' : 'dias'}
+                  {o.shippedAt && (
+                    <span className="font-semibold text-sky-300/70">· enviado {fmtDate(o.shippedAt)}</span>
+                  )}
+                  {o.deliveryNote && <span className="font-semibold">· {o.deliveryNote}</span>}
+                </p>
+              )}
+
               {/* ações */}
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                 <a
@@ -499,26 +555,132 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
                   <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
                   Chamar no WhatsApp
                 </a>
-                {NEXT_ACTION[o.status] && (
-                  <button
-                    type="button"
-                    onClick={() => advance(o)}
-                    disabled={advancing === o.code}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-amber-400/60 bg-amber-400/10 px-4 py-3 text-sm font-black uppercase tracking-wide text-amber-400 transition hover:bg-amber-400/20 disabled:opacity-60"
-                  >
-                    {advancing === o.code ? (
-                      <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-                    ) : (
-                      (() => {
-                        const act = NEXT_ACTION[o.status]
-                        const Icon = act!.icon
-                        return <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                      })()
-                    )}
-                    {NEXT_ACTION[o.status]!.label}
-                  </button>
-                )}
+                {(() => {
+                  const act = NEXT_ACTION[o.status]
+                  if (!act) return null
+                  if (act.next === 'enviado') {
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => openShipForm(o)}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-amber-400/60 bg-amber-400/10 px-4 py-3 text-sm font-black uppercase tracking-wide text-amber-400 transition hover:bg-amber-400/20"
+                      >
+                        <Truck className="h-5 w-5 shrink-0" aria-hidden="true" />
+                        Marcar como enviado
+                      </button>
+                    )
+                  }
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => advance(o)}
+                      disabled={advancing === o.code}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-amber-400/60 bg-amber-400/10 px-4 py-3 text-sm font-black uppercase tracking-wide text-amber-400 transition hover:bg-amber-400/20 disabled:opacity-60"
+                    >
+                      {advancing === o.code ? (
+                        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Home className="h-5 w-5 shrink-0" aria-hidden="true" />
+                      )}
+                      Marcar como entregue
+                    </button>
+                  )
+                })()}
               </div>
+
+              {/* formulário de envio — define/altera o prazo */}
+              {shipForm?.code === o.code && (
+                <div className="mt-3 rounded-xl border-2 border-amber-400/50 bg-amber-400/10 p-4">
+                  <p className="text-sm font-black uppercase tracking-wide text-amber-400">
+                    🚚 Envio do pedido {o.code}
+                  </p>
+                  <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                    <div className="sm:w-36">
+                      <label
+                        htmlFor={`days-${o.code}`}
+                        className="text-xs font-bold text-rose-100/70"
+                      >
+                        Prazo (dias)
+                      </label>
+                      <input
+                        id={`days-${o.code}`}
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={90}
+                        value={shipForm.days}
+                        onChange={(e) => setShipForm({ ...shipForm, days: e.target.value })}
+                        className="mt-1 h-12 w-full rounded-xl border-2 border-amber-400/25 bg-white/5 px-3 text-lg font-black text-white focus-visible:border-amber-400 focus-visible:outline-none"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label
+                        htmlFor={`note-${o.code}`}
+                        className="text-xs font-bold text-rose-100/70"
+                      >
+                        Observação (opcional)
+                      </label>
+                      <input
+                        id={`note-${o.code}`}
+                        type="text"
+                        maxLength={120}
+                        placeholder="Ex.: caminhão da loja, transportadora…"
+                        value={shipForm.note}
+                        onChange={(e) => setShipForm({ ...shipForm, note: e.target.value })}
+                        className="mt-1 h-12 w-full rounded-xl border-2 border-amber-400/25 bg-white/5 px-3 text-base font-bold text-white placeholder:text-rose-200/30 focus-visible:border-amber-400 focus-visible:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={saveShipForm}
+                      disabled={advancing === o.code}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-3 text-sm font-black uppercase tracking-wide text-[#2b0a16] transition hover:bg-amber-300 disabled:opacity-60"
+                    >
+                      {advancing === o.code ? (
+                        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Truck className="h-5 w-5" aria-hidden="true" />
+                      )}
+                      Confirmar envio
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShipForm(null)}
+                      className="rounded-xl border-2 border-white/20 px-4 py-3 text-sm font-black uppercase tracking-wide text-rose-100/70 transition hover:border-white/40"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-rose-100/50">
+                    O cliente acompanha em tempo real na página do pedido dele.
+                  </p>
+                </div>
+              )}
+
+              {/* alterar prazo — pedido já enviado */}
+              {o.status === 'enviado' && shipForm?.code !== o.code && (
+                <button
+                  type="button"
+                  onClick={() => openShipForm(o)}
+                  className="mt-2 flex w-full items-center justify-center gap-1.5 text-xs font-bold text-sky-300 underline underline-offset-4 transition hover:text-sky-200"
+                >
+                  <Truck className="h-3.5 w-3.5" aria-hidden="true" /> Alterar prazo de entrega
+                </button>
+              )}
+
+              {/* ver o que o cliente vê */}
+              <p className="mt-2 text-center">
+                <a
+                  href={`/pedido/${o.code}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-rose-200/50 underline underline-offset-4 transition hover:text-rose-100"
+                >
+                  Ver página que o cliente vê
+                </a>
+              </p>
             </article>
           ))}
         </div>

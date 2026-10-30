@@ -31,7 +31,9 @@ const orderSchema = z.object({
 
 const patchSchema = z.object({
   code: z.string().min(4).max(20),
-  status: z.enum(["novo", "aguardando_pagamento", "pago", "enviado"]),
+  status: z.enum(["novo", "aguardando_pagamento", "pago", "enviado", "entregue"]),
+  deliveryDays: z.number().int().min(1).max(90).optional(),
+  deliveryNote: z.string().max(200).optional().or(z.literal("")),
 });
 
 /** Painel admin: exige e-mail + senha nos headers */
@@ -73,10 +75,39 @@ export async function PATCH(req: Request) {
         { status: 400 }
       );
     }
-    const order = await db.order.update({
-      where: { code: parsed.data.code },
-      data: { status: parsed.data.status },
-    });
+    const { code, status, deliveryDays, deliveryNote } = parsed.data;
+
+    const existing = await db.order.findUnique({ where: { code } });
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Pedido não encontrado." },
+        { status: 404 }
+      );
+    }
+
+    const data: {
+      status: string;
+      deliveryDays?: number;
+      deliveryNote?: string | null;
+      shippedAt?: Date | null;
+      deliveredAt?: Date | null;
+    } = { status };
+    if (deliveryDays !== undefined) data.deliveryDays = deliveryDays;
+    if (deliveryNote !== undefined) data.deliveryNote = deliveryNote.trim() || null;
+
+    // 🚚 datas de envio/entrega automáticas
+    if (status === "enviado") {
+      data.shippedAt = existing.shippedAt ?? new Date();
+      data.deliveredAt = null;
+    } else if (status === "entregue") {
+      data.shippedAt = existing.shippedAt ?? new Date();
+      data.deliveredAt = new Date();
+    } else {
+      data.shippedAt = null;
+      data.deliveredAt = null;
+    }
+
+    const order = await db.order.update({ where: { code }, data });
     return NextResponse.json({ ok: true, order });
   } catch (err) {
     console.error("[api/orders] erro ao atualizar pedido:", err);

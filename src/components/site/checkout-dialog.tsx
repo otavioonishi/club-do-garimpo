@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -19,6 +20,7 @@ import {
   Sparkles,
   Copy,
   Clock,
+  Truck,
 } from 'lucide-react'
 import {
   Dialog,
@@ -827,10 +829,17 @@ export default function CheckoutDialog({
                     <MessageCircle className="h-6 w-6 shrink-0" aria-hidden="true" />
                     Avisar que paguei no WhatsApp
                   </a>
+                  <Link
+                    href={`/pedido/${order.code}`}
+                    className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-rose-300 bg-white px-6 py-3.5 text-base font-black uppercase tracking-wide text-rose-700 shadow-sm transition hover:border-rose-500"
+                  >
+                    <Truck className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    Acompanhar meu pedido
+                  </Link>
                   <button
                     type="button"
                     onClick={() => onOpenChange(false)}
-                    className="mt-2.5 w-full rounded-xl py-2 text-center text-base font-bold text-stone-500 underline underline-offset-4 transition hover:text-rose-700"
+                    className="mt-2 w-full rounded-xl py-2 text-center text-base font-bold text-stone-500 underline underline-offset-4 transition hover:text-rose-700"
                   >
                     Continuar navegando
                   </button>
@@ -871,10 +880,17 @@ export default function CheckoutDialog({
                 <MessageCircle className="h-6 w-6 shrink-0" aria-hidden="true" />
                 Enviar no WhatsApp
               </a>
+              <Link
+                href={`/pedido/${order.code}`}
+                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-rose-300 bg-white px-6 py-3.5 text-base font-black uppercase tracking-wide text-rose-700 shadow-sm transition hover:border-rose-500"
+              >
+                <Truck className="h-5 w-5 shrink-0" aria-hidden="true" />
+                Acompanhar meu pedido
+              </Link>
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="mt-2.5 w-full rounded-xl py-2 text-center text-base font-bold text-stone-500 underline underline-offset-4 transition hover:text-rose-700"
+                className="mt-2 w-full rounded-xl py-2 text-center text-base font-bold text-stone-500 underline underline-offset-4 transition hover:text-rose-700"
               >
                 Continuar navegando
               </button>

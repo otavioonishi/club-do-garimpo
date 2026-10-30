@@ -50,10 +50,15 @@ model Order {
   paymentMethod    String
   notes            String?
   totalValue       Float
-  status           String    @default("novo") // novo | aguardando_pagamento | pago | enviado
+  status           String    @default("novo") // novo | aguardando_pagamento | pago | enviado | entregue
   // dados da cobrança Pix (MisticPay)
   pixTransactionId String? // ID da transação na MisticPay
   pixCopyPaste     String? // código Pix copia e cola
   paidAt           DateTime? // quando o Pix foi confirmado
+  // 🚚 envio e prazo de entrega (controlados pelo painel admin)
+  deliveryDays     Int? // prazo de entrega informado pelo admin (em dias)
+  deliveryNote     String? // observação do envio (ex.: transportadora, rastreio)
+  shippedAt        DateTime? // quando o pedido foi marcado como enviado
+  deliveredAt      DateTime? // quando o pedido foi marcado como entregue
   createdAt        DateTime  @default(now())
 }
