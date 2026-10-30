@@ -1,18 +1,30 @@
 # 🎄 Club do Garimpo — Blueprint de deploy no Render
 #
+# ⚡ IMPORTANTE — leia isto se o site der erro 502:
+#    O plano FREE do Render tem só 512 MB de RAM. O `next build` precisa de
+#    ~1 GB e morre no meio ("build failed" / HTTP 502). Por isso o site já vai
+#    PRÉ-COMPILADO no GitHub (pasta .next/standalone) e o Render não builda
+#    nada — só roda `node .next/standalone/server.js` (~150 MB de RAM).
+#
 # Como usar (depois que o projeto estiver no GitHub):
 #   1. Acesse dashboard.render.com → New + → Blueprint
 #   2. Escolha este repositório → Apply
 #   3. Nas variáveis marcadas com "sync: false", preencha:
 #        MISTICPAY_CLIENT_ID     → sua pk_ (painel MisticPay → API → Chaves de Acesso)
 #        MISTICPAY_CLIENT_SECRET → sua sk_
-#        APP_PUBLIC_URL          → https://NOME-DO-SEU-SERVIÇO.onrender.com
+#        APP_PUBLIC_URL          → https://club-do-garimpo.onrender.com
 #   4. Depois do primeiro deploy, cadastre o webhook na MisticPay:
-#        https://NOME-DO-SEU-SERVIÇO.onrender.com/api/webhooks/misticpay
+#        https://club-do-garimpo.onrender.com/api/webhooks/misticpay
+#
+# 🔧 Se o serviço JÁ EXISTE no Render e está dando 502:
+#    Painel do serviço → Settings → Build & Deploy → edite:
+#      Build Command:  echo "site pre-compilado"
+#      Start Command:  [ -f /tmp/custom.db ] || cp prisma/render-init.db /tmp/custom.db; npm start
+#    Salve e depois: Manual Deploy → Deploy latest commit.
 #
 # 💰 Plano FREE: sem cartão de crédito. Limitações:
 #    - O site "dorme" após 15 min sem visitas (próximo acesso demora ~1 min)
-#    - O banco SQLite fica em /tmp e é recriado a cada deploy/restart,
+#    - O banco SQLite fica em /tmp e é recriado a cada deploy,
 #      então o HISTÓRICO de pedidos se perde — atenda cada pedido pelo
 #      WhatsApp na hora.
 #    - Para ter pedidos permanentes + site 24h: no painel do Render,
@@ -27,8 +39,11 @@ services:
     region: frankfurt # região mais próxima do Brasil entre as disponíveis
     branch: main
     autoDeploy: true # cada push no GitHub publica automaticamente
-    buildCommand: npm install && npm run build
-    startCommand: npx prisma db push --skip-generate && npm start
+    # ✅ nada de build no servidor: o standalone já vem commitado do GitHub
+    #    (buildar aqui estouraria os 512 MB do plano FREE)
+    buildCommand: echo "site pre-compilado — nada para buildar"
+    # banco novo só na primeira vez; nas reiniciações mantém os pedidos
+    startCommand: '[ -f /tmp/custom.db ] || cp prisma/render-init.db /tmp/custom.db; npm start'
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION
