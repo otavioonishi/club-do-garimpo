@@ -9,11 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  // runtime (funções serverless): conexão via pooler (pgbouncer)
-  url       = env("POSTGRES_PRISMA_URL")
-  // criação de tabelas (db push): conexão de sessão estável
-  directUrl = env("POSTGRES_URL")
+  provider = "postgresql"
+  // a URL real é resolvida em tempo de build/deploy (vercel.json) e no db.ts
+  url      = env("DATABASE_URL")
 }
 
 model User {
