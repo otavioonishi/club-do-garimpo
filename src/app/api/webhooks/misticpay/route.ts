@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     }
 
     const providerId = String(parsed.data.transactionId);
-    console.log(`[webhook misticpay] aviso recebido tx=${providerId}`);
+    console.warn(`[webhook misticpay] aviso recebido tx=${providerId}`);
 
     // pedidos de demonstração não têm transação real — ignora
     if (providerId.startsWith("demo_")) {
@@ -58,9 +58,9 @@ export async function POST(req: Request) {
         where: { code: order.code },
         data: { status: "pago", paidAt: new Date() },
       });
-      console.log(`[webhook misticpay] pedido ${order.code} CONFIRMADO na MisticPay → PAGO`);
+      console.warn(`[webhook misticpay] pedido ${order.code} CONFIRMADO na MisticPay → PAGO`);
     } else {
-      console.log(
+      console.warn(
         `[webhook misticpay] pedido ${order.code}: MisticPay diz ${state} — segue aguardando`
       );
     }

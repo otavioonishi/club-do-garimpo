@@ -52,7 +52,7 @@ async function ensureTables(): Promise<void> {
     await raw.$executeRawUnsafe(
       `CREATE UNIQUE INDEX IF NOT EXISTS "Order_code_key" ON "Order"("code")`
     )
-    console.log('[db] ✔ tabela Order verificada/criada (autocura)')
+    console.warn('[db] ✔ tabela Order verificada/criada (autocura)')
   } finally {
     await raw.$disconnect().catch(() => {})
   }
