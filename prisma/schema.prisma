@@ -9,9 +9,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  // Variável criada automaticamente pela integração Vercel + Supabase (e Neon)
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  // runtime (funções serverless): conexão via pooler (pgbouncer)
+  url       = env("POSTGRES_PRISMA_URL")
+  // criação de tabelas (db push): conexão de sessão estável
+  directUrl = env("POSTGRES_URL")
 }
 
 model User {
