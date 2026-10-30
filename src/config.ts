@@ -23,9 +23,9 @@ export const SITE_CONFIG = {
   lightsKitPrice: 20,
 
   // 🔐 Login do painel de pedidos — abra o site com #pedidos no final do link
-  // ⚠️ Só você deve saber esses dados! (e-mail + senha)
-  adminEmail: "login-do-painel",
-  adminPin: "REMOVIDO-USE-ENV",
+  // As credenciais agora ficam nas variáveis de ambiente da Vercel
+  // (ADMIN_EMAIL e ADMIN_PIN) e são validadas só no servidor —
+  // nada de senha aparece no navegador/inspetor.
 
   // 🎧 Suporte — texto exibido no botão de suporte e na mensagem enviada
   supportNote:

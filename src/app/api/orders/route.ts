@@ -9,6 +9,7 @@ import {
   isConfigured,
   isDemoMode,
 } from "@/lib/misticpay";
+import { pinOk } from "@/lib/admin-auth";
 
 const orderSchema = z.object({
   customerName: z.string().min(3).max(120),
@@ -36,14 +37,7 @@ const patchSchema = z.object({
   deliveryNote: z.string().max(200).optional().or(z.literal("")),
 });
 
-/** Painel admin: exige e-mail + senha nos headers */
-function pinOk(req: Request): boolean {
-  return (
-    req.headers.get("x-admin-pin") === SITE_CONFIG.adminPin &&
-    (req.headers.get("x-admin-email") ?? "").trim().toLowerCase() ===
-      SITE_CONFIG.adminEmail.toLowerCase()
-  );
-}
+/** Painel admin: exige e-mail + senha nos headers (validação no servidor). */
 
 export async function GET(req: Request) {
   if (!pinOk(req)) {

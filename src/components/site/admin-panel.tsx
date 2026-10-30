@@ -18,6 +18,8 @@ import {
   X,
 } from 'lucide-react'
 import { SITE_CONFIG } from '@/config'
+// 🔒 as credenciais do painel NÃO ficam mais no navegador — o servidor
+// (variáveis ADMIN_EMAIL / ADMIN_PIN na Vercel) valida o login.
 
 /* ---------------- tipos ---------------- */
 
@@ -112,14 +114,10 @@ export default function AdminGate() {
 
   if (!visible) return null
 
-  const authorized =
-    auth !== null &&
-    auth.email.toLowerCase() === SITE_CONFIG.adminEmail.toLowerCase() &&
-    auth.pin === SITE_CONFIG.adminPin
-
-  if (authorized) {
+  if (auth) {
     return (
       <AdminPanel
+        auth={auth}
         onLogout={() => {
           sessionStorage.removeItem('admin-email')
           sessionStorage.removeItem('admin-pin')
@@ -150,16 +148,31 @@ function LoginScreen({
   const [email, setEmail] = useState('')
   const [pin, setPin] = useState('')
   const [error, setError] = useState(false)
+  const [checking, setChecking] = useState(false)
 
-  function submit() {
-    const emailOk =
-      email.trim().toLowerCase() === SITE_CONFIG.adminEmail.toLowerCase()
-    const pinOk = pin === SITE_CONFIG.adminPin
-    if (emailOk && pinOk) {
-      onOk(email.trim().toLowerCase(), pin)
-    } else {
+  // 🔒 a senha certa mora só no servidor — o navegador envia e ele responde
+  async function submit() {
+    if (checking) return
+    setChecking(true)
+    setError(false)
+    try {
+      const res = await fetch('/api/orders', {
+        headers: {
+          'x-admin-email': email.trim().toLowerCase(),
+          'x-admin-pin': pin,
+        },
+        cache: 'no-store',
+      })
+      if (res.ok) {
+        onOk(email.trim().toLowerCase(), pin)
+      } else {
+        setError(true)
+        setPin('')
+      }
+    } catch {
       setError(true)
-      setPin('')
+    } finally {
+      setChecking(false)
     }
   }
 
@@ -220,9 +233,17 @@ function LoginScreen({
           )}
           <button
             type="submit"
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 text-lg font-black uppercase tracking-wide text-[#2b0a16] shadow-lg transition hover:bg-amber-300"
+            disabled={checking}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 text-lg font-black uppercase tracking-wide text-[#2b0a16] shadow-lg transition hover:bg-amber-300 disabled:opacity-60"
           >
-            Entrar no painel
+            {checking ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                Conferindo…
+              </>
+            ) : (
+              'Entrar no painel'
+            )}
           </button>
           <a
             href="#loja"
@@ -238,7 +259,13 @@ function LoginScreen({
 
 /* ---------------- painel principal ---------------- */
 
-function AdminPanel({ onLogout }: { onLogout: () => void }) {
+function AdminPanel({
+  auth,
+  onLogout,
+}: {
+  auth: { email: string; pin: string }
+  onLogout: () => void
+}) {
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -251,11 +278,16 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
     try {
       const res = await fetch('/api/orders', {
         headers: {
-          'x-admin-pin': SITE_CONFIG.adminPin,
-          'x-admin-email': SITE_CONFIG.adminEmail,
+          'x-admin-pin': auth.pin,
+          'x-admin-email': auth.email,
         },
         cache: 'no-store',
       })
+      if (res.status === 401) {
+        // sessão virou inválida — volta pro login
+        onLogout()
+        return
+      }
       if (!res.ok) throw new Error()
       const json = await res.json()
       setOrders(json.orders)
@@ -265,7 +297,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [auth, onLogout])
 
   useEffect(() => {
     load()
@@ -286,8 +318,8 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-pin': SITE_CONFIG.adminPin,
-          'x-admin-email': SITE_CONFIG.adminEmail,
+          'x-admin-pin': auth.pin,
+          'x-admin-email': auth.email,
         },
         body: JSON.stringify({ code: o.code, status: next }),
       })
@@ -315,8 +347,8 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-pin': SITE_CONFIG.adminPin,
-          'x-admin-email': SITE_CONFIG.adminEmail,
+          'x-admin-pin': auth.pin,
+          'x-admin-email': auth.email,
         },
         body: JSON.stringify({
           code: shipForm.code,
