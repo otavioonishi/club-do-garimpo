@@ -264,7 +264,7 @@ function Hero() {
 
           <div className="order-2">
             <p className="font-script text-3xl leading-none text-rose-500 sm:text-4xl" aria-hidden="true">
-              Edição especial de Natal
+              Pequena na caixa, gigante no Natal 🎄
             </p>
             <h1 className="mt-2 font-display text-4xl font-black leading-[1.08] text-[#3d0c1e] sm:text-5xl xl:text-6xl">
               Árvore de Natal{" "}
