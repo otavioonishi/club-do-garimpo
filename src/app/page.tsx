@@ -265,9 +265,9 @@ function Hero() {
           </p>
           <div className="relative w-full">
             {/* moldura acompanha a proporção da foto: árvore SEMPRE inteira, sem corte */}
-            <div className="relative mx-auto w-fit lg:w-full">
+            <div className="relative mx-auto w-fit">
               <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
-              <div className="relative w-fit overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200 lg:w-full">
+              <div className="relative w-fit overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200">
                 <Image
                   src="/arvore-real.jpg"
                   alt="Árvore de Natal de 2 metros decorada com estrela vermelha brilhante no topo, bolas vermelhas e prateadas e luzes acesas em uma sala aconchegante"
@@ -275,15 +275,15 @@ function Hero() {
                   height={1672}
                   priority
                   sizes="(max-width: 640px) 78vw, 640px"
-                  className="h-[min(540px,68vh)] w-auto object-cover object-top supports-[height:1svh]:h-[min(540px,68svh)] lg:h-[min(580px,72vh)] lg:w-full"
+                  className="h-[min(540px,68vh)] w-auto object-cover object-top supports-[height:1svh]:h-[min(540px,68svh)] lg:h-[min(640px,68vh)]"
                 />
 
                 {/* ✨ a mensagem — em cima da foto */}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#380f1f]/95 via-[#380f1f]/60 to-transparent px-5 pb-5 pt-12 text-center sm:pb-6">
                   <p className="font-script text-2xl leading-tight text-amber-300 drop-shadow-sm sm:text-3xl">
-                    Isso é o que você recebe<br className="lg:hidden" /> em casa 🎄
+                    Isso é o que você recebe<br /> em casa 🎄
                   </p>
-                  <p className="mt-1.5 text-[10px] font-black uppercase tracking-[0.06em] text-rose-100 lg:text-xs lg:tracking-[0.18em]">
+                  <p className="mt-1.5 text-[10px] font-black uppercase tracking-[0.06em] text-rose-100 lg:text-[11px] lg:tracking-[0.1em]">
                     Árvore de 2m · 54 enfeites inclusos
                   </p>
                 </div>
