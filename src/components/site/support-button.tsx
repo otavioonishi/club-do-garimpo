@@ -28,7 +28,7 @@ export default function SupportButton() {
         <div
           role="dialog"
           aria-label="Suporte ao cliente"
-          className="fixed bottom-[5.5rem] right-4 z-50 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border-2 border-rose-200 bg-white shadow-2xl shadow-rose-950/30 sm:bottom-24 sm:right-6"
+          className="fixed bottom-[8.75rem] right-4 z-50 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border-2 border-rose-200 bg-white shadow-2xl shadow-rose-950/30 lg:bottom-24 sm:right-6"
         >
           {/* cabeçalho */}
           <div className="flex items-center justify-between gap-2 bg-gradient-to-r from-rose-700 to-rose-900 px-4 py-3">
@@ -83,7 +83,7 @@ export default function SupportButton() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label="Abrir suporte"
-        className="fixed bottom-6 right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-4 py-3 font-black uppercase text-white shadow-2xl shadow-rose-950/50 transition-all duration-300 hover:scale-105 hover:from-rose-500 hover:to-rose-700 sm:bottom-8 sm:right-6"
+        className="fixed bottom-[5.25rem] right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-4 py-3 font-black uppercase text-white shadow-2xl shadow-rose-950/50 transition-all duration-300 hover:scale-105 hover:from-rose-500 hover:to-rose-700 lg:bottom-8 sm:right-6"
       >
         <Headset className="h-6 w-6" aria-hidden="true" />
         <span className="text-sm">Suporte</span>

@@ -257,7 +257,7 @@ function Hero() {
       <Sparkles className="pointer-events-none absolute bottom-24 left-[45%] hidden h-4 w-4 animate-twinkle text-rose-300 [animation-delay:1.4s] lg:block" aria-hidden="true" />
 
       <div className="relative mx-auto grid max-w-6xl gap-x-10 gap-y-5 px-4 py-10 sm:py-14 lg:min-h-[calc(100vh-9rem)] lg:grid-cols-2 lg:items-center lg:gap-y-10">
-        <div className="order-2 flex flex-col items-start gap-5 lg:order-1">
+        <div className="order-1 flex flex-col items-start gap-5 lg:order-1">
           <span className="order-1 rounded-full border border-rose-300 bg-white px-4 py-1.5 text-xs font-black uppercase tracking-widest text-rose-700 shadow-sm">
             ⭐ O mais vendido do Natal
           </span>
@@ -301,7 +301,7 @@ function Hero() {
           </p>
         </div>
 
-        <div className="relative order-1 mx-auto flex w-full max-w-md items-center justify-center lg:order-2 lg:max-w-[30rem]">
+        <div className="relative order-2 mx-auto flex w-full max-w-md items-center justify-center lg:order-2 lg:max-w-[30rem]">
           <div className="relative">
             <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
             <div className="relative w-full overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200 lg:w-fit">
@@ -355,9 +355,35 @@ function TrustStrip() {
 
 /* ============================ PÁGINA ============================ */
 
+/* 💰 Barra fixa de compra no celular — o botão fica SEMPRE visível,
+   mesmo quando a pessoa rola a página. */
+function StickyBuyBar() {
+  return (
+    <div
+      className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-rose-200 bg-white/95 shadow-[0_-8px_24px_rgba(80,10,30,0.12)] backdrop-blur lg:hidden"
+    >
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+        <div className="leading-tight">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
+            <span className="line-through">{SITE_CONFIG.oldPrice}</span>
+            <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">
+              {SITE_CONFIG.discount}
+            </span>
+          </p>
+          <p className="text-2xl font-black text-rose-700">{SITE_CONFIG.price}</p>
+        </div>
+        <BuyButton className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-6 py-3.5 text-base font-black uppercase tracking-wide text-white shadow-lg shadow-rose-900/30 transition hover:from-rose-500 hover:to-rose-700">
+          <ShoppingBag className="h-5 w-5 shrink-0" aria-hidden="true" />
+          Comprar agora
+        </BuyButton>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FBF7F2]">
+    <div className="flex min-h-screen flex-col bg-[#FBF7F2] pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
       <MarqueeTopBar />
       <UrgencyBar />
       <SiteHeader />
@@ -374,6 +400,7 @@ export default function Home() {
       </main>
       <SiteFooter />
       <SupportButton />
+      <StickyBuyBar />
       <AdminGate />
     </div>
   );

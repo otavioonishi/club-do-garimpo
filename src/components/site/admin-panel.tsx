@@ -26,16 +26,16 @@ import { SITE_CONFIG } from '@/config'
 type Order = {
   id: string
   code: string
-  customerName: string
+  customerName: string | null
   cpf: string | null
-  phone: string
-  cep: string
-  street: string
-  number: string
+  phone: string | null
+  cep: string | null
+  street: string | null
+  number: string | null
   complement: string | null
-  neighborhood: string
-  city: string
-  state: string
+  neighborhood: string | null
+  city: string | null
+  state: string | null
   quantity: number
   lightsKit: boolean
   totalValue: number
@@ -365,7 +365,15 @@ function AdminPanel({
   }
 
   async function copyAddress(o: Order) {
-    const text = `${o.customerName} - ${o.phone}\n${o.street}, ${o.number}${o.complement ? ` - ${o.complement}` : ''} - ${o.neighborhood} - ${o.city}/${o.state} - CEP ${o.cep}`
+    const parts = [
+      o.customerName ?? 'Cliente',
+      o.phone ?? '',
+      o.street ? `${o.street}, ${o.number ?? 's/n'}${o.complement ? ` - ${o.complement}` : ''}` : '',
+      o.neighborhood ?? '',
+      o.city && o.state ? `${o.city}/${o.state}` : '',
+      o.cep ? `CEP ${o.cep}` : '',
+    ].filter(Boolean)
+    const text = parts.join('\n')
     try {
       await navigator.clipboard.writeText(text)
       setCopiedCode(o.code)
@@ -375,10 +383,11 @@ function AdminPanel({
     }
   }
 
-  function chatUrl(o: Order): string {
+  function chatUrl(o: Order): string | null {
+    if (!o.phone) return null
     const digits = onlyDigits(o.phone)
     const full = digits.startsWith('55') ? digits : `55${digits}`
-    const first = o.customerName.split(' ')[0]
+    const first = (o.customerName ?? 'Cliente').split(' ')[0]
     const msg =
       o.status === 'pago'
         ? `Olá ${first}! Aqui é do Club do Garimpo 🎄 Recebi seu Pix do pedido *${o.code}* (${brl(o.totalValue)})${o.lightsKit ? ' com o Kit Luzinhas' : ''}. Vou separar sua árvore e combinar a entrega por aqui!`
@@ -510,36 +519,56 @@ function AdminPanel({
 
               {/* cliente */}
               <div className="mt-3">
-                <p className="text-base font-black text-white">{o.customerName}</p>
+                <p className="text-base font-black text-white">
+                  {o.customerName ?? (
+                    <span className="text-rose-200/50">⏳ Aguardando o cliente se identificar</span>
+                  )}
+                </p>
                 <p className="text-sm text-rose-100/80">
-                  {o.phone}
+                  {o.phone ?? 'sem telefone ainda'}
                   {o.cpf ? ` · CPF ${o.cpf.slice(0, 3)}.***.${o.cpf.slice(-2)}` : ''}
                 </p>
               </div>
 
               {/* endereço */}
               <div className="mt-2 rounded-xl bg-white/5 p-3">
-                <p className="text-sm leading-relaxed text-rose-100/80">
-                  {o.street}, {o.number}
-                  {o.complement ? ` - ${o.complement}` : ''}
-                  <br />
-                  {o.neighborhood} · {o.city}/{o.state} · CEP {o.cep}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => copyAddress(o)}
-                  className="mt-2 flex items-center gap-1.5 text-xs font-bold text-amber-400 underline underline-offset-4 transition hover:text-amber-300"
-                >
-                  {copiedCode === o.code ? (
-                    <>
-                      <Check className="h-3.5 w-3.5" aria-hidden="true" /> Endereço copiado!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" aria-hidden="true" /> Copiar endereço
-                    </>
-                  )}
-                </button>
+                {o.street ? (
+                  <>
+                    <p className="text-sm leading-relaxed text-rose-100/80">
+                      {o.street}, {o.number}
+                      {o.complement ? ` - ${o.complement}` : ''}
+                      <br />
+                      {o.neighborhood} · {o.city}/{o.state} · CEP {o.cep}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => copyAddress(o)}
+                      className="mt-2 flex items-center gap-1.5 text-xs font-bold text-amber-400 underline underline-offset-4 transition hover:text-amber-300"
+                    >
+                      {copiedCode === o.code ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" aria-hidden="true" /> Endereço copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" aria-hidden="true" /> Copiar endereço
+                        </>
+                      )}
+                    </button>
+                  </>
+                ) : (
+                  <p
+                    className={`text-sm font-bold leading-relaxed ${
+                      o.status === 'pago'
+                        ? 'text-amber-400'
+                        : 'text-rose-200/50'
+                    }`}
+                  >
+                    {o.status === 'pago'
+                      ? '⚠️ Pago, mas SEM endereço — o cliente ainda não preencheu o formulário. Chame no WhatsApp!'
+                      : '⏳ Endereço entra depois que o pagamento cair'}
+                  </p>
+                )}
               </div>
 
               {/* itens */}
@@ -578,15 +607,17 @@ function AdminPanel({
 
               {/* ações */}
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <a
-                  href={chatUrl(o)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-black uppercase tracking-wide text-[#0b3d1f] transition hover:bg-[#2fe073]"
-                >
-                  <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-                  Chamar no WhatsApp
-                </a>
+                {chatUrl(o) && (
+                  <a
+                    href={chatUrl(o)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-black uppercase tracking-wide text-[#0b3d1f] transition hover:bg-[#2fe073]"
+                  >
+                    <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    Chamar no WhatsApp
+                  </a>
+                )}
                 {(() => {
                   const act = NEXT_ACTION[o.status]
                   if (!act) return null

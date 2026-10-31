@@ -24,8 +24,8 @@ type TrackOrder = {
   lightsKit: boolean
   totalValue: number
   customerFirstName: string
-  city: string
-  state: string
+  city: string | null
+  state: string | null
   deliveryDays: number | null
   deliveryNote: string | null
   shippedAt: string | null
@@ -130,7 +130,7 @@ export default function TrackingView({ code }: { code: string }) {
   } else if (shipped) {
     heroIcon = Truck
     heroTitle = 'Sua árvore está a caminho! 🚚'
-    heroText = `Boa notícia, ${order.customerFirstName}! Seu pedido saiu para entrega em ${order.city}/${order.state}. Acompanhe o prazo aqui — esta página atualiza sozinha.`
+    heroText = `Boa notícia, ${order.customerFirstName}! Seu pedido saiu para entrega${order.city && order.state ? ` em ${order.city}/${order.state}` : ''}. Acompanhe o prazo aqui — esta página atualiza sozinha.`
   } else if (paid) {
     heroIcon = Sparkles
     heroTitle = 'Pagamento confirmado! 🎉'

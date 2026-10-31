@@ -36,21 +36,23 @@ model Post {
 model Order {
   id               String    @id @default(cuid())
   code             String    @unique
-  customerName     String
+  // Fluxo "Pix primeiro": o pedido nasce SEM dados do cliente (o Pix é
+  // emitido na hora) e o nome/contato/endereço entram depois do pagamento.
+  customerName     String?
   cpf              String? // CPF do pagador (emitido na cobrança Pix)
-  phone            String
-  cep              String
-  street           String
-  number           String
+  phone            String?
+  cep              String?
+  street           String?
+  number           String?
   complement       String?
-  neighborhood     String
-  city             String
-  state            String
+  neighborhood     String?
+  city             String?
+  state            String?
   quantity         Int       @default(1)
   lightsKit        Boolean   @default(false)
-  paymentMethod    String
+  paymentMethod    String    @default("pix")
   notes            String?
-  totalValue       Float
+  totalValue       Float     @default(80)
   status           String    @default("novo") // novo | aguardando_pagamento | pago | enviado | entregue
   // dados da cobrança Pix (MisticPay)
   pixTransactionId String? // ID da transação na MisticPay

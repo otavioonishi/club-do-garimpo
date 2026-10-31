@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { SITE_CONFIG } from "@/config";
-import { isValidCpf } from "@/lib/cpf";
+import { generatePlaceholderCpf } from "@/lib/cpf";
 import {
   createDemoCharge,
   createPixCharge,
@@ -11,22 +11,15 @@ import {
 } from "@/lib/misticpay";
 import { pinOk } from "@/lib/admin-auth";
 
+/**
+ * 💳 Fluxo "Pix primeiro": a pessoa clica em Comprar e o QR Code aparece na
+ * hora, ANTES de qualquer formulário. O pedido nasce sem dados do cliente
+ * (nome/contato/endereço entram depois, PATCH /api/orders/[code], já pago).
+ */
+
 const orderSchema = z.object({
-  customerName: z.string().min(3).max(120),
-  cpf: z
-    .string()
-    .refine((v) => isValidCpf(v), { message: "CPF inválido" }),
-  phone: z.string().min(10).max(20),
-  cep: z.string().min(8).max(9),
-  street: z.string().min(2).max(200),
-  number: z.string().min(1).max(20),
-  complement: z.string().max(200).optional().or(z.literal("")),
-  neighborhood: z.string().min(2).max(120),
-  city: z.string().min(2).max(120),
-  state: z.string().length(2),
-  quantity: z.number().int().min(1).max(20),
+  quantity: z.number().int().min(1).max(20).default(1),
   lightsKit: z.boolean().default(false),
-  paymentMethod: z.enum(["pix"]).default("pix"),
   notes: z.string().max(500).optional().or(z.literal("")),
 });
 
@@ -38,6 +31,31 @@ const patchSchema = z.object({
 });
 
 /** Painel admin: exige e-mail + senha nos headers (validação no servidor). */
+
+/** 🚦 Rate limit em memória (por instância): máx. 10 pedidos/10min por IP.
+ *  Como agora qualquer clique cria pedido + cobrança Pix, isso segura bots
+ *  curiosos sem atrapalhar cliente de verdade. */
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 10;
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const list = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (list.length >= RATE_MAX) {
+    hits.set(ip, list);
+    return true;
+  }
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 10_000) hits.clear(); // evita crescimento infinito
+  return false;
+}
+
+function clientIp(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for") ?? "";
+  return fwd.split(",")[0]?.trim() || "desconhecido";
+}
 
 export async function GET(req: Request) {
   if (!pinOk(req)) {
@@ -114,18 +132,18 @@ export async function PATCH(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const parsed = orderSchema.safeParse(body);
+    if (rateLimited(clientIp(req))) {
+      return NextResponse.json(
+        { error: "Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo." },
+        { status: 429 }
+      );
+    }
 
+    const body = await req.json().catch(() => ({}));
+    const parsed = orderSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        {
-          error: "Dados do formulário inválidos. Confira os campos e tente novamente.",
-          issues: parsed.error.issues.map((i) => ({
-            campo: i.path.join("."),
-            problema: i.message,
-          })),
-        },
+        { error: "Dados do pedido inválidos." },
         { status: 400 }
       );
     }
@@ -139,26 +157,18 @@ export async function POST(req: Request) {
     const order = await db.order.create({
       data: {
         code,
-        customerName: data.customerName.trim(),
-        cpf: data.cpf.replace(/\D/g, ""),
-        phone: data.phone,
-        cep: data.cep,
-        street: data.street.trim(),
-        number: data.number.trim(),
-        complement: data.complement?.trim() || null,
-        neighborhood: data.neighborhood.trim(),
-        city: data.city.trim(),
-        state: data.state.toUpperCase(),
         quantity: data.quantity,
         lightsKit: data.lightsKit,
-        paymentMethod: data.paymentMethod,
+        paymentMethod: "pix",
         notes: data.notes?.trim() || null,
         totalValue,
         status: "novo",
       },
     });
 
-    /* 💳 gera a cobrança Pix na hora (MisticPay) ------------------------ */
+    /* 💳 gera a cobrança Pix NA HORA, sem pedir nada ao cliente.
+       O gateway exige nome + CPF de pagador — usamos um provisório,
+       porque quem paga é o próprio banco da pessoa. ------------------ */
     let payment: {
       available: boolean;
       demo: boolean;
@@ -172,8 +182,8 @@ export async function POST(req: Request) {
         const base = process.env.APP_PUBLIC_URL?.trim().replace(/\/$/, "");
         const charge = await createPixCharge({
           amount: totalValue,
-          payerName: data.customerName.trim(),
-          payerDocument: data.cpf.replace(/\D/g, ""),
+          payerName: "Cliente Club do Garimpo",
+          payerDocument: generatePlaceholderCpf(),
           reference: code,
           description: `Pedido ${code} — ${SITE_CONFIG.productName}`,
           webhookUrl: base ? `${base}/api/webhooks/misticpay` : undefined,
@@ -234,7 +244,6 @@ export async function POST(req: Request) {
           code,
           quantity: data.quantity,
           totalValue,
-          customerName: data.customerName.trim(),
           paymentMethod: "pix",
           lightsKit: data.lightsKit,
         },

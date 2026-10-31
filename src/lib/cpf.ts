@@ -25,3 +25,31 @@ export function maskCpf(value: string): string {
   if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`
   return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
 }
+
+/**
+ * Gera um CPF válido (só dígitos) para usar como pagador provisório do Pix.
+ * No novo fluxo o Pix é emitido ANTES de o cliente informar os dados —
+ * o gateway exige um CPF no formato certo, então o servidor preenche um
+ * provisório. O CPF real do comprador entra depois no pedido.
+ */
+export function generatePlaceholderCpf(): string {
+  const digit = (base: number[], weightStart: number): number => {
+    let sum = 0
+    for (let i = 0; i < base.length; i++) {
+      sum += base[i] * (weightStart - i)
+    }
+    const rest = (sum * 10) % 11
+    return rest === 10 ? 0 : rest
+  }
+
+  let base: number[]
+  do {
+    base = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10))
+  } while (base.every((d) => d === base[0])) // evita sequência repetida
+
+  const d1 = digit(base, 10)
+  base.push(d1)
+  const d2 = digit(base, 11)
+  base.push(d2)
+  return base.join('')
+}
