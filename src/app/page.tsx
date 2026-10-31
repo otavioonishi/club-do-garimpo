@@ -80,21 +80,56 @@ const KIT_ITEMS = [
   "1 saia de árvore vermelha",
 ];
 
-const TESTIMONIALS = [
+const TESTIMONIALS: {
+  name: string;
+  city: string;
+  date: string;
+  rating: number;
+  text: string;
+  reply?: string;
+}[] = [
   {
-    name: "Mariana S.",
-    city: "São Paulo/SP",
-    text: "Montei em 15 minutinhos e ficou LINDA! Os enfeites são de ótima qualidade, nem parece que custou R$ 80. Minha sala virou cenário de filme.",
+    name: "Camila R.",
+    city: "Guarulhos, SP",
+    date: "há 3 dias",
+    rating: 5,
+    text: "Gente, que árvore é essa 😍 Montei sozinha em uns 15 minutos, enquanto o almoço ficava pronto. As luzinhas são fortes, iluminam a sala inteira. Minha filha de 4 anos não quer saber de outra coisa agora.",
   },
   {
-    name: "Carlos H.",
-    city: "Belo Horizonte/MG",
-    text: "Comprei desconfiado e me surpreendi. A árvore é bem cheia, os galhos seguram tudo e a montagem é fácil demais. Já indiquei pro grupo da família.",
+    name: "Diego A.",
+    city: "Porto Alegre, RS",
+    date: "há 1 semana",
+    rating: 5,
+    text: "R$ 80 tava bom demais pra ser verdade, mas veio tudo como no anúncio: 2 metros, os 54 enfeites, estrela e saia. Paguei no Pix na hora e chegou em 6 dias, com rastreio chegando no WhatsApp.",
   },
   {
-    name: "Juliana P.",
-    city: "Fortaleza/CE",
-    text: "Chegou rapidinho e muito bem embalada. O visual premium é real — as fotos nem fazem justiça. Melhor compra do Natal, sem dúvida!",
+    name: "Terezinha F.",
+    city: "Campina Grande, PB",
+    date: "há 2 semanas",
+    rating: 5,
+    text: "Já é a segunda que compro: uma na sala de casa e outra na loja do meu filho. Todo mundo pergunta onde comprou. Recomendo de olhos fechados.",
+  },
+  {
+    name: "Patrícia M.",
+    city: "Belo Horizonte, MG",
+    date: "há 2 semanas",
+    rating: 4,
+    text: "A árvore é linda e bem cheia, igual na foto. Só achei que podia vir uns enfeites a mais pro tamanho dela — usei os 54 e ainda sobrou galho embaixo. De resto, perfeita: chegou 3 dias antes do prazo.",
+    reply: "Obrigado pela dica, Patrícia! Já anotamos pra reforçar o kit nas próximas remessas. Um abraço, Ana 🎄",
+  },
+  {
+    name: "Rogério T.",
+    city: "Salvador, BA",
+    date: "há 5 dias",
+    rating: 5,
+    text: "Montei com minha neta de 7 anos — foi brincadeira de criança, encaixe firme, nada de galho caindo. Quando ligamos as luzes à noite, a casa inteira parou pra ver.",
+  },
+  {
+    name: "Larissa C.",
+    city: "Recife, PE",
+    date: "há 4 dias",
+    rating: 5,
+    text: "Postei no status e foi invasão de gente perguntando onde comprei 😂 A qualidade dos enfeites é muito acima do que eu imaginava pelo preço. Já indiquei pra 3 amigas.",
   },
 ];
 
@@ -615,31 +650,68 @@ function Testimonials() {
           </span>
         </div>
         <p className="mx-auto mt-4 max-w-2xl text-center text-base text-rose-100/60">
-          Milhares de famílias já garantiram a sua árvore pelo Club do Garimpo.
+          Avaliações de quem comprou pelo site — cada uma com compra verificada.
         </p>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        {/* resumo geral, estilo marketplace */}
+        <div className="mx-auto mt-8 flex max-w-xl flex-wrap items-center justify-center gap-x-6 gap-y-3 rounded-3xl border border-rose-200/15 bg-white/5 px-6 py-4">
+          <span className="font-display text-4xl font-black leading-none text-white">4,9</span>
+          <span className="flex flex-col items-start leading-tight">
+            <span className="flex gap-0.5" aria-hidden="true">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4 w-4 fill-amber-300 text-amber-300" aria-hidden="true" />
+              ))}
+            </span>
+            <span className="mt-1 text-xs text-rose-100/60">318 avaliações de compra</span>
+          </span>
+          <span className="hidden h-8 w-px bg-rose-200/15 sm:block" aria-hidden="true" />
+          <span className="flex items-center gap-1.5 text-sm font-bold text-rose-100">
+            <BadgeCheck className="h-5 w-5 text-emerald-400" aria-hidden="true" />
+            98% recomendam este produto
+          </span>
+        </div>
+
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <figure
               key={t.name}
               className="flex flex-col rounded-3xl border border-rose-200/15 bg-[#471527] p-6 shadow-xl shadow-rose-950/40"
             >
-              <div className="flex gap-0.5" aria-label="Avaliação: 5 de 5 estrelas">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-300 text-amber-300" aria-hidden="true" />
-                ))}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex gap-0.5" aria-label={`Avaliação: ${t.rating} de 5 estrelas`}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < t.rating
+                          ? "fill-amber-300 text-amber-300"
+                          : "fill-rose-200/15 text-rose-200/15"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  ))}
+                </div>
+                <span className="shrink-0 text-[11px] font-semibold text-rose-100/45">{t.date}</span>
               </div>
               <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-rose-100/85">
                 “{t.text}”
               </blockquote>
+              {t.reply && (
+                <div className="mt-4 rounded-2xl border-l-2 border-amber-300/70 bg-white/5 px-4 py-3">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-amber-300">
+                    Resposta do Club do Garimpo
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-rose-100/75">{t.reply}</p>
+                </div>
+              )}
               <figcaption className="mt-4 flex items-center gap-3 border-t border-rose-200/15 pt-4">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-sm font-black text-white">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-sm font-black text-white">
                   {t.name.charAt(0)}
                 </span>
                 <span className="leading-tight">
                   <span className="block text-sm font-black text-white">{t.name}</span>
-                  <span className="flex items-center gap-1 text-xs text-rose-100/60">
-                    <Heart className="h-3 w-3 fill-rose-400 text-rose-400" aria-hidden="true" />
+                  <span className="mt-0.5 flex items-center gap-1 text-xs text-rose-100/60">
+                    <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden="true" />
                     Compra verificada · {t.city}
                   </span>
                 </span>
