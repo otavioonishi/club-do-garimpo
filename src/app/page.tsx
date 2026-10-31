@@ -272,7 +272,7 @@ function Hero() {
                 height={1672}
                 priority
                 sizes="(max-width: 640px) 92vw, 480px"
-                className="h-[470px] w-full object-cover object-top sm:h-[560px] lg:h-auto lg:max-h-[72vh] lg:w-auto"
+                className="h-[470px] w-full object-cover object-top sm:h-[560px] lg:h-[min(580px,72vh)] lg:w-full"
               />
 
               {/* ✨ a mensagem — em cima da foto */}
