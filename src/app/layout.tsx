@@ -44,7 +44,7 @@ export const metadata: Metadata = {
       "De R$ 260,00 por apenas R$ 80,00. Visual premium, fácil de montar e 54 enfeites inclusos. Entre no Grupo VIP grátis!",
     type: "website",
     locale: "pt_BR",
-    images: [{ url: "/arvore-hero.png", width: 864, height: 1152, alt: "Árvore de Natal 2m com 54 enfeites" }],
+    images: [{ url: "/arvore-real.jpg", width: 941, height: 1672, alt: "Árvore de Natal 2m com 54 enfeites" }],
   },
   twitter: {
     card: "summary_large_image",

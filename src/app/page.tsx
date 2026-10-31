@@ -112,7 +112,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Como eu pago?",
-    a: "Só trabalhamos com Pix — e é de propósito, para conseguir deixar o preço nesse valor! É simples: clique em qualquer botão de compra, preencha seus dados e o QR Code do Pix aparece na hora, na própria tela. Você escaneia no app do banco (ou copia o código), paga e o pedido é confirmado sozinho. O frete combinamos com você pelo WhatsApp.",
+    a: "Só trabalhamos com Pix — e é de propósito, para conseguir deixar o preço nesse valor! É simples: clique em qualquer botão de compra e o QR Code do Pix já aparece na hora, na própria tela (com o aviso “Gerando seu pagamento…” enquanto preparamos tudo). Você escaneia no app do banco — ou toca em “Copiar código Pix” — e assim que o pagamento cair, a própria tela libera o formulário para você preencher nome e endereço de entrega. O frete combinamos com você pelo WhatsApp.",
   },
   {
     q: "E se eu não gostar do produto?",
@@ -256,39 +256,55 @@ function Hero() {
       <Sparkles className="pointer-events-none absolute right-[10%] top-16 h-5 w-5 animate-twinkle text-rose-400 [animation-delay:0.7s]" aria-hidden="true" />
       <Sparkles className="pointer-events-none absolute bottom-24 left-[45%] hidden h-4 w-4 animate-twinkle text-rose-300 [animation-delay:1.4s] lg:block" aria-hidden="true" />
 
-      <div className="relative mx-auto grid max-w-6xl gap-x-10 gap-y-5 px-4 py-10 sm:py-14 lg:min-h-[calc(100vh-9rem)] lg:grid-cols-2 lg:items-center lg:gap-y-10">
-        <div className="order-1 flex flex-col items-start gap-5 lg:order-1">
-          <span className="order-1 rounded-full border border-rose-300 bg-white px-4 py-1.5 text-xs font-black uppercase tracking-widest text-rose-700 shadow-sm">
-            ⭐ O mais vendido do Natal
-          </span>
+      <div className="relative mx-auto grid max-w-6xl gap-x-10 gap-y-6 px-4 pb-10 pt-6 sm:py-12 lg:min-h-[calc(100vh-9rem)] lg:grid-cols-2 lg:items-center lg:py-14">
+        {/* 📸 FOTO REAL do produto — a primeira coisa que a pessoa vê */}
+        <div className="order-1 mx-auto flex w-full max-w-md items-center justify-center lg:order-1 lg:max-w-[30rem]">
+          <div className="relative w-full">
+            <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
+            <div className="relative w-full overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200">
+              <Image
+                src="/arvore-real.jpg"
+                alt="Árvore de Natal de 2 metros decorada com estrela vermelha brilhante no topo, bolas vermelhas e prateadas e luzes acesas em uma sala aconchegante"
+                width={941}
+                height={1672}
+                priority
+                sizes="(max-width: 640px) 92vw, 480px"
+                className="h-[500px] w-full object-cover object-top sm:h-[580px] lg:h-auto lg:max-h-[72vh] lg:w-auto"
+              />
 
-          <div className="order-2">
-            <p className="font-script text-3xl leading-none text-rose-500 sm:text-4xl" aria-hidden="true">
-              Pequena na caixa, gigante no Natal 🎄
-            </p>
-            <h1 className="mt-2 font-display text-4xl font-black leading-[1.08] text-[#3d0c1e] sm:text-5xl xl:text-6xl">
-              Árvore de Natal{" "}
-              <span className="italic text-rose-600">2 metros</span>{" "}
-              com <span className="italic text-rose-600">54 enfeites</span> inclusos
-            </h1>
+              {/* ✨ a mensagem — em cima da foto */}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#380f1f]/95 via-[#380f1f]/60 to-transparent px-5 pb-5 pt-16 text-center sm:pb-6">
+                <p className="font-script text-2xl leading-tight text-amber-300 drop-shadow-sm sm:text-3xl">
+                  Isso é o que você recebe em casa 🎄
+                </p>
+                <p className="mt-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-rose-100 sm:text-xs">
+                  Árvore de 2m · 54 enfeites inclusos · kit completo
+                </p>
+              </div>
+            </div>
+
+            <div className="animate-float absolute -left-3 top-8 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-left-6">
+              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
+                <Gift className="h-5 w-5 text-amber-600" /> 54 enfeites inclusos
+              </p>
+            </div>
+
+            <div className="animate-float-slow absolute -right-3 top-1/2 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-right-6">
+              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
+                <Ruler className="h-5 w-5 text-amber-600" /> 2m de altura
+              </p>
+            </div>
           </div>
+        </div>
 
-          <p className="order-5 max-w-xl text-base leading-relaxed text-stone-600 sm:text-lg lg:order-3">
-            Visual premium, montagem fácil e o clima perfeito para a sua casa —
-            sem gastar uma fortuna. Chegou a hora de deixar este Natal
-            inesquecível para a família toda.
-          </p>
-
-          <RatingRow className="order-6 lg:order-4" />
-
-          <PriceBlock size="lg" className="order-3 lg:order-5" />
-
-          <BuyButton className="animate-pulse-glow-rose order-4 flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-8 py-4 text-center text-base font-black uppercase tracking-wide text-white shadow-xl shadow-rose-900/30 transition hover:scale-[1.02] hover:from-rose-500 hover:to-rose-700 sm:w-auto sm:text-lg lg:order-6">
+        {/* textos — no celular, o botão vem LOGO ABAIXO da foto */}
+        <div className="order-2 flex flex-col items-start gap-4 lg:order-2 lg:gap-5">
+          <BuyButton className="animate-pulse-glow-rose order-1 flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-8 py-4 text-center text-base font-black uppercase tracking-wide text-white shadow-xl shadow-rose-900/30 transition hover:scale-[1.02] hover:from-rose-500 hover:to-rose-700 sm:text-lg lg:order-6">
             <ShoppingBag className="h-6 w-6 shrink-0" />
             Comprar agora — R$ 80,00
           </BuyButton>
 
-          <p className="order-7 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-stone-500 sm:text-sm">
+          <p className="order-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-stone-500 sm:text-sm lg:order-7">
             <span className="flex items-center gap-1">
               <ShieldCheck className="h-4 w-4 text-rose-600" /> Compra segura
             </span>
@@ -299,34 +315,31 @@ function Hero() {
               <Clock className="h-4 w-4 text-rose-600" /> Garantia de 7 dias
             </span>
           </p>
-        </div>
 
-        <div className="relative order-2 mx-auto flex w-full max-w-md items-center justify-center lg:order-2 lg:max-w-[30rem]">
-          <div className="relative">
-            <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
-            <div className="relative w-full overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200 lg:w-fit">
-              <Image
-                src="/arvore-hero.png"
-                alt="Árvore de Natal de 2 metros decorada com enfeites vermelhos e dourados em uma sala aconchegante"
-                width={864}
-                height={1152}
-                priority
-                className="h-[540px] w-full object-cover object-center sm:h-auto lg:h-auto lg:w-auto lg:max-h-[62vh] lg:max-w-full"
-              />
-            </div>
+          <span className="order-3 rounded-full border border-rose-300 bg-white px-4 py-1.5 text-xs font-black uppercase tracking-widest text-rose-700 shadow-sm lg:order-1">
+            ⭐ O mais vendido do Natal
+          </span>
 
-            <div className="animate-float absolute -left-3 top-8 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-left-6">
-              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
-                <Gift className="h-5 w-5 text-amber-600" /> 54 enfeites inclusos
-              </p>
-            </div>
-
-            <div className="animate-float-slow absolute -right-3 bottom-8 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-right-6">
-              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
-                <Ruler className="h-5 w-5 text-amber-600" /> 2m de altura
-              </p>
-            </div>
+          <div className="order-4 lg:order-2">
+            <p className="font-script text-3xl leading-none text-rose-500 sm:text-4xl" aria-hidden="true">
+              Pequena na caixa, gigante no Natal 🎄
+            </p>
+            <h1 className="mt-2 font-display text-4xl font-black leading-[1.08] text-[#3d0c1e] sm:text-5xl xl:text-6xl">
+              Árvore de Natal{" "}
+              <span className="italic text-rose-600">2 metros</span>{" "}
+              com <span className="italic text-rose-600">54 enfeites</span> inclusos
+            </h1>
           </div>
+
+          <PriceBlock size="lg" className="order-5 lg:order-5" />
+
+          <RatingRow className="order-6 lg:order-4" />
+
+          <p className="order-7 max-w-xl text-base leading-relaxed text-stone-600 sm:text-lg lg:order-3">
+            Visual premium, montagem fácil e o clima perfeito para a sua casa —
+            sem gastar uma fortuna. Chegou a hora de deixar este Natal
+            inesquecível para a família toda.
+          </p>
         </div>
       </div>
     </section>
