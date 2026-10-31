@@ -1,32 +1,15 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import { ShoppingBag } from 'lucide-react'
 import BuyButton from './buy-button'
 import { SITE_CONFIG } from '@/config'
 
 /**
- * 💰 Barra fixa de compra no celular — garante que o botão esteja
- * sempre à mão DURANTE a rolagem. Mas ela só aparece depois que a
- * pessoa começa a rolar: na abertura do site, quem chama a atenção
- * é a árvore inteira, não a barra.
+ * 💰 Barra fixa de compra no celular — visível desde a abertura,
+ * para o botão de comprar estar sempre à mão (formato compacto,
+ * sem roubar a cena da árvore).
  */
 export default function StickyBuyBar() {
-  const [show, setShow] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 140)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t-2 border-rose-200 bg-white/95 shadow-[0_-8px_24px_rgba(80,10,30,0.12)] backdrop-blur transition-transform duration-300 lg:hidden ${
-        show ? 'translate-y-0' : 'translate-y-full'
-      }`}
-    >
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-rose-200 bg-white/95 shadow-[0_-8px_24px_rgba(80,10,30,0.12)] backdrop-blur lg:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5">
         <div className="leading-tight">
           <p className="flex items-center gap-1.5 text-[11px] font-bold text-stone-500">
