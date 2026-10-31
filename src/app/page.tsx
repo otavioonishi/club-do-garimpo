@@ -20,6 +20,7 @@ import {
 import { SITE_CONFIG, whatsappOrderUrl } from "@/config";
 import Countdown from "@/components/site/countdown";
 import SupportButton from "@/components/site/support-button";
+import StickyBuyBar from "@/components/site/sticky-buy-bar";
 import AdminGate from "@/components/site/admin-panel";
 import BuyButton from "@/components/site/buy-button";
 import {
@@ -263,38 +264,41 @@ function Hero() {
             Pequena na caixa, gigante no Natal 🎄
           </p>
           <div className="relative w-full">
-            <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
-            <div className="relative w-full overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200">
-              <Image
-                src="/arvore-real.jpg"
-                alt="Árvore de Natal de 2 metros decorada com estrela vermelha brilhante no topo, bolas vermelhas e prateadas e luzes acesas em uma sala aconchegante"
-                width={941}
-                height={1672}
-                priority
-                sizes="(max-width: 640px) 92vw, 480px"
-                className="h-[470px] w-full object-cover object-top sm:h-[560px] lg:h-[min(580px,72vh)] lg:w-full"
-              />
+            {/* moldura acompanha a proporção da foto: árvore SEMPRE inteira, sem corte */}
+            <div className="relative mx-auto w-fit lg:w-full">
+              <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
+              <div className="relative w-fit overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200 lg:w-full">
+                <Image
+                  src="/arvore-real.jpg"
+                  alt="Árvore de Natal de 2 metros decorada com estrela vermelha brilhante no topo, bolas vermelhas e prateadas e luzes acesas em uma sala aconchegante"
+                  width={941}
+                  height={1672}
+                  priority
+                  sizes="(max-width: 640px) 78vw, 640px"
+                  className="h-[min(540px,68vh)] w-auto object-cover object-top supports-[height:1svh]:h-[min(540px,68svh)] lg:h-[min(580px,72vh)] lg:w-full"
+                />
 
-              {/* ✨ a mensagem — em cima da foto */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#380f1f]/95 via-[#380f1f]/60 to-transparent px-5 pb-5 pt-16 text-center sm:pb-6">
-                <p className="font-script text-2xl leading-tight text-amber-300 drop-shadow-sm sm:text-3xl">
-                  Isso é o que você recebe em casa 🎄
-                </p>
-                <p className="mt-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-rose-100 sm:text-xs">
-                  Árvore de 2m · 54 enfeites inclusos · kit completo
-                </p>
+                {/* ✨ a mensagem — em cima da foto */}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#380f1f]/95 via-[#380f1f]/60 to-transparent px-5 pb-5 pt-12 text-center sm:pb-6">
+                  <p className="font-script text-2xl leading-tight text-amber-300 drop-shadow-sm sm:text-3xl">
+                    Isso é o que você recebe<br className="lg:hidden" /> em casa 🎄
+                  </p>
+                  <p className="mt-1.5 text-[10px] font-black uppercase tracking-[0.06em] text-rose-100 lg:text-xs lg:tracking-[0.18em]">
+                    Árvore de 2m · 54 enfeites inclusos
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="animate-float absolute -left-3 top-8 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-left-6">
-              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
-                <Gift className="h-5 w-5 text-amber-600" /> 54 enfeites inclusos
+            <div className="animate-float absolute -left-3 top-8 rounded-2xl border border-rose-200 bg-white/95 px-3.5 py-2 shadow-lg shadow-rose-900/15 backdrop-blur sm:-left-6">
+              <p className="flex items-center gap-1.5 text-[13px] font-black uppercase text-rose-800">
+                <Gift className="h-4 w-4 text-amber-600" /> 54 enfeites inclusos
               </p>
             </div>
 
-            <div className="animate-float-slow absolute -right-3 top-1/2 rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 shadow-xl shadow-rose-900/15 backdrop-blur sm:-right-6">
-              <p className="flex items-center gap-2 text-sm font-black uppercase text-rose-800">
-                <Ruler className="h-5 w-5 text-amber-600" /> 2m de altura
+            <div className="animate-float-slow absolute -right-3 top-1/2 rounded-2xl border border-rose-200 bg-white/95 px-3.5 py-2 shadow-lg shadow-rose-900/15 backdrop-blur sm:-right-6">
+              <p className="flex items-center gap-1.5 text-[13px] font-black uppercase text-rose-800">
+                <Ruler className="h-4 w-4 text-amber-600" /> 2m de altura
               </p>
             </div>
           </div>
@@ -302,7 +306,7 @@ function Hero() {
 
         {/* textos — no celular, o botão vem LOGO ABAIXO da foto */}
         <div className="order-2 flex flex-col items-start gap-4 lg:order-2 lg:gap-5">
-          <BuyButton className="animate-pulse-glow-rose order-1 flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-8 py-4 text-center text-base font-black uppercase tracking-wide text-white shadow-xl shadow-rose-900/30 transition hover:scale-[1.02] hover:from-rose-500 hover:to-rose-700 sm:text-lg lg:order-6">
+          <BuyButton className="order-1 flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-8 py-4 text-center text-base font-black uppercase tracking-wide text-white shadow-xl shadow-rose-900/30 transition hover:scale-[1.02] hover:from-rose-500 hover:to-rose-700 sm:text-lg lg:order-6">
             <ShoppingBag className="h-6 w-6 shrink-0" />
             Comprar agora — R$ 80,00
           </BuyButton>
@@ -397,32 +401,6 @@ function SloganSticker() {
 }
 
 /* ============================ PÁGINA ============================ */
-
-/* 💰 Barra fixa de compra no celular — o botão fica SEMPRE visível,
-   mesmo quando a pessoa rola a página. */
-function StickyBuyBar() {
-  return (
-    <div
-      className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-rose-200 bg-white/95 shadow-[0_-8px_24px_rgba(80,10,30,0.12)] backdrop-blur lg:hidden"
-    >
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="leading-tight">
-          <p className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
-            <span className="line-through">{SITE_CONFIG.oldPrice}</span>
-            <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">
-              {SITE_CONFIG.discount}
-            </span>
-          </p>
-          <p className="text-2xl font-black text-rose-700">{SITE_CONFIG.price}</p>
-        </div>
-        <BuyButton className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-6 py-3.5 text-base font-black uppercase tracking-wide text-white shadow-lg shadow-rose-900/30 transition hover:from-rose-500 hover:to-rose-700">
-          <ShoppingBag className="h-5 w-5 shrink-0" aria-hidden="true" />
-          Comprar agora
-        </BuyButton>
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   return (

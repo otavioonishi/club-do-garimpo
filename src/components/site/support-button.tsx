@@ -83,10 +83,10 @@ export default function SupportButton() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label="Abrir suporte"
-        className="fixed bottom-[5.25rem] right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-4 py-3 font-black uppercase text-white shadow-2xl shadow-rose-950/50 transition-all duration-300 hover:scale-105 hover:from-rose-500 hover:to-rose-700 lg:bottom-8 sm:right-6"
+        className="fixed bottom-[5.25rem] right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-800 px-3.5 py-3.5 font-black uppercase text-white shadow-2xl shadow-rose-950/50 transition-all duration-300 hover:scale-105 hover:from-rose-500 hover:to-rose-700 lg:bottom-8 sm:right-6 sm:px-4 sm:py-3"
       >
         <Headset className="h-6 w-6" aria-hidden="true" />
-        <span className="text-sm">Suporte</span>
+        <span className="hidden text-sm sm:inline">Suporte</span>
       </button>
     </>
   )
