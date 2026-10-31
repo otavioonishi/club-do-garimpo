@@ -8,7 +8,6 @@ import {
   Sparkles,
   Gem,
   Star,
-  Check,
   QrCode,
   Flame,
   TreePine,
@@ -16,6 +15,11 @@ import {
   ChevronRight,
   Heart,
   ShoppingBag,
+  Circle,
+  Ribbon,
+  Snowflake,
+  Package,
+  Layers,
 } from "lucide-react";
 import { SITE_CONFIG, whatsappOrderUrl } from "@/config";
 import Countdown from "@/components/site/countdown";
@@ -70,14 +74,14 @@ const BENEFITS = [
 ];
 
 const KIT_ITEMS = [
-  "18 bolas vermelhas brilhantes e foscas",
-  "12 bolas douradas brilhantes e foscas",
-  "8 laços de veludo vermelho",
-  "6 flocos de neve dourados",
-  "4 pinhas decorativas",
-  "4 caixinhas de presente",
-  "1 estrela dourada para o topo",
-  "1 saia de árvore vermelha",
+  { qty: 18, label: "Bolas vermelhas brilhantes e foscas", icon: Circle, iconClass: "fill-rose-600 text-rose-600" },
+  { qty: 12, label: "Bolas douradas brilhantes e foscas", icon: Circle, iconClass: "fill-amber-500 text-amber-500" },
+  { qty: 8, label: "Laços de veludo vermelho", icon: Ribbon, iconClass: "text-rose-700" },
+  { qty: 6, label: "Flocos de neve dourados", icon: Snowflake, iconClass: "text-amber-500" },
+  { qty: 4, label: "Pinhas decorativas", icon: TreePine, iconClass: "text-amber-700" },
+  { qty: 4, label: "Caixinhas de presente", icon: Package, iconClass: "text-rose-600" },
+  { qty: 1, label: "Estrela dourada para o topo", icon: Star, iconClass: "fill-amber-500 text-amber-500" },
+  { qty: 1, label: "Saia de árvore vermelha", icon: Layers, iconClass: "text-rose-700" },
 ];
 
 const TESTIMONIALS: {
@@ -527,33 +531,80 @@ function KitSection() {
           <div className="absolute -top-4 right-4 rotate-6 rounded-full bg-rose-600 px-5 py-2 text-sm font-black uppercase text-white shadow-lg shadow-rose-900/40">
             54 peças!
           </div>
+          <div className="absolute -bottom-4 left-4 flex -rotate-2 items-center gap-1.5 rounded-full border border-rose-100 bg-white px-4 py-2 text-xs font-black text-rose-700 shadow-lg shadow-rose-900/15 sm:text-sm">
+            <Package className="h-4 w-4 text-rose-600" aria-hidden="true" />
+            Tudo no mesmo pacote
+          </div>
         </div>
 
         <div>
-          <h2 className="font-display text-3xl font-black leading-tight text-[#3d0c1e] sm:text-4xl">
+          <p className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[0.08em] text-rose-700 shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+            Unboxing completo
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-black leading-tight text-[#3d0c1e] sm:text-4xl">
             O que vem <span className="italic text-rose-600">na caixa?</span>
           </h2>
           <p className="mt-3 text-base leading-relaxed text-stone-600">
-            Você recebe a árvore de 2 metros <strong className="text-rose-950">e o kit completo com 54
-            enfeites</strong> no mesmo pacote. É só abrir, montar e decorar —
-            tudo combinando no tema vermelho e dourado.
+            A árvore de 2 metros <strong className="text-rose-950">e os 54 enfeites viajam
+            juntos</strong>, na mesma caixa. Nada de "enfeite vendido separadamente" —
+            você abre, monta e decora tudo de uma vez, no tema vermelho e dourado.
           </p>
 
-          <ul className="mt-6 space-y-3">
-            {KIT_ITEMS.map((item) => (
-              <li key={item} className="flex items-center gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-600/10 ring-1 ring-rose-400/60">
-                  <Check className="h-4 w-4 text-rose-600" aria-hidden="true" />
-                </span>
-                <span className="text-sm font-semibold text-stone-700 sm:text-base">{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-6 rounded-2xl border border-amber-300/80 bg-amber-50 p-4">
-            <p className="text-sm font-black text-amber-800 sm:text-base">
-              🎁 Valor total do kit separado: mais de R$ 150 — aqui está tudo incluso!
+          <div className="mt-6 rounded-[1.75rem] border-2 border-rose-100 bg-white p-4 shadow-sm sm:p-5">
+            <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-rose-700">
+              <Gift className="h-3.5 w-3.5 text-rose-600" aria-hidden="true" />
+              Abra a caixa e encontre:
             </p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {KIT_ITEMS.map((item) => (
+                <li
+                  key={item.label}
+                  className="flex items-center gap-2.5 rounded-2xl bg-[#FDF7F4] px-3 py-2.5 ring-1 ring-rose-100"
+                >
+                  <span className="flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full bg-rose-600 px-1.5 text-[11px] font-black text-white shadow-sm shadow-rose-900/25">
+                    {item.qty}×
+                  </span>
+                  <item.icon
+                    className={`h-4.5 w-4.5 shrink-0 ${item.iconClass}`}
+                    aria-hidden="true"
+                  />
+                  <span className="text-[13px] font-semibold leading-snug text-stone-700">
+                    {item.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 px-4 py-3 ring-1 ring-rose-100">
+              <span className="text-[11px] font-bold text-stone-500 sm:text-xs">
+                Somando tudo:
+              </span>
+              <span className="text-[11px] font-black text-rose-700 sm:text-xs">
+                18 + 12 + 8 + 6 + 4 + 4 + 1 + 1
+              </span>
+              <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-[11px] font-black text-white sm:text-xs">
+                = 54 enfeites ✓
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-amber-300/80 bg-amber-50 p-4">
+            <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.1em] text-amber-700">
+              <Gem className="h-3.5 w-3.5 text-amber-600" aria-hidden="true" />
+              Fazendo as contas
+            </p>
+            <div className="mt-2.5 space-y-1.5">
+              <p className="flex items-center justify-between gap-3 text-sm font-semibold text-amber-900 sm:text-base">
+                <span>Kit de 54 enfeites comprado à parte</span>
+                <span className="shrink-0 font-black line-through opacity-60">R$ 150+</span>
+              </p>
+              <p className="flex items-center justify-between gap-3 border-t border-amber-300/70 pt-2 text-sm font-black text-amber-900 sm:text-base">
+                <span>Aqui: árvore de 2m + o kit inteiro</span>
+                <span className="shrink-0 rounded-full bg-amber-500 px-2.5 py-0.5 text-sm text-white shadow-sm">
+                  R$ 80
+                </span>
+              </p>
+            </div>
           </div>
 
           <div className="mt-4 flex items-start gap-3 rounded-2xl border-2 border-rose-200 bg-white p-4 shadow-sm">
