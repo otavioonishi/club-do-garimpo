@@ -258,7 +258,10 @@ function Hero() {
 
       <div className="relative mx-auto grid max-w-6xl gap-x-10 gap-y-6 px-4 pb-10 pt-6 sm:py-12 lg:min-h-[calc(100vh-9rem)] lg:grid-cols-2 lg:items-center lg:py-14">
         {/* 📸 FOTO REAL do produto — a primeira coisa que a pessoa vê */}
-        <div className="order-1 mx-auto flex w-full max-w-md items-center justify-center lg:order-1 lg:max-w-[30rem]">
+        <div className="order-1 mx-auto flex w-full max-w-md flex-col items-center justify-center lg:order-1 lg:max-w-[30rem]">
+          <p className="mb-3 text-center font-script text-3xl leading-none text-rose-500 sm:text-4xl">
+            Pequena na caixa, gigante no Natal 🎄
+          </p>
           <div className="relative w-full">
             <div className="pointer-events-none absolute -inset-3 -rotate-2 rounded-[3rem] border-2 border-dashed border-rose-300/80" aria-hidden="true" />
             <div className="relative w-full overflow-hidden rounded-[2.5rem] border-[6px] border-white shadow-2xl shadow-rose-900/25 ring-1 ring-rose-200">
@@ -269,7 +272,7 @@ function Hero() {
                 height={1672}
                 priority
                 sizes="(max-width: 640px) 92vw, 480px"
-                className="h-[500px] w-full object-cover object-top sm:h-[580px] lg:h-auto lg:max-h-[72vh] lg:w-auto"
+                className="h-[470px] w-full object-cover object-top sm:h-[560px] lg:h-auto lg:max-h-[72vh] lg:w-auto"
               />
 
               {/* ✨ a mensagem — em cima da foto */}
@@ -321,10 +324,7 @@ function Hero() {
           </span>
 
           <div className="order-4 lg:order-2">
-            <p className="font-script text-3xl leading-none text-rose-500 sm:text-4xl" aria-hidden="true">
-              Pequena na caixa, gigante no Natal 🎄
-            </p>
-            <h1 className="mt-2 font-display text-4xl font-black leading-[1.08] text-[#3d0c1e] sm:text-5xl xl:text-6xl">
+            <h1 className="font-display text-4xl font-black leading-[1.08] text-[#3d0c1e] sm:text-5xl xl:text-6xl">
               Árvore de Natal{" "}
               <span className="italic text-rose-600">2 metros</span>{" "}
               com <span className="italic text-rose-600">54 enfeites</span> inclusos
@@ -366,6 +366,36 @@ function TrustStrip() {
   );
 }
 
+/* 😍 Slogan fofinho com a figurinha — logo depois da foto real */
+function SloganSticker() {
+  return (
+    <section
+      aria-label="Slogan da loja"
+      className="border-y border-rose-100 bg-gradient-to-r from-sky-50 via-rose-50 to-amber-50 py-8 sm:py-10"
+    >
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 px-4 text-center sm:flex-row sm:gap-7 sm:text-left">
+        <span className="flex h-24 w-24 shrink-0 rotate-3 items-center justify-center overflow-hidden rounded-[1.8rem] border-4 border-white bg-white p-1 shadow-xl shadow-rose-900/10 transition duration-300 hover:rotate-0 sm:h-28 sm:w-28">
+          <Image
+            src="/arvore-sticker.png"
+            alt="Árvore de Natal de desenho com carinhas de emoji, luzinhas douradas e presentes"
+            width={112}
+            height={112}
+            className="h-full w-full object-contain"
+          />
+        </span>
+        <div>
+          <p className="font-script text-3xl leading-tight text-rose-600 sm:text-4xl">
+            Uma árvore que deixa todo mundo assim 😍
+          </p>
+          <p className="mt-1.5 text-sm font-bold text-stone-500 sm:text-base">
+            Monta em minutinhos, acende as luzes e a casa inteira sorri junto ✨🎄
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ============================ PÁGINA ============================ */
 
 /* 💰 Barra fixa de compra no celular — o botão fica SEMPRE visível,
@@ -402,6 +432,7 @@ export default function Home() {
       <SiteHeader />
       <main className="flex-1">
         <Hero />
+        <SloganSticker />
         <TrustStrip />
         <Benefits />
         <KitSection />
